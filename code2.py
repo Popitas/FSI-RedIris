@@ -3,14 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Make 100 phony data points in NumPy.
-x_data = np.float32(np.random.rand(100)) # Random input
+x_data = np.float32(np.random.rand(100))  # Random input
 y_data = 2. * x_data + 3.
 
-y_data += np.float32(np.random.normal(size=100))*0.1
+y_data += np.float32(np.random.normal(size=100)) * 0.1
 
 plt.plot(x_data, y_data, 'bo')
 plt.show()
-
 
 # Construct a linear model.
 b = tf.Variable(tf.zeros([1]))
@@ -34,13 +33,7 @@ for step in xrange(0, 1000):
     sess.run(train)
     if step % 100 == 0:
         print step, sess.run(m), sess.run(b)
-        
+
 sess.close()
 
 # Learns best fit is m: 2. , b: 3.
-
-
-
-
-
-

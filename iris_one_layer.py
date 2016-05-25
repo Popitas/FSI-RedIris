@@ -29,12 +29,16 @@ print
 x = tf.placeholder("float", [None, 4])
 y_ = tf.placeholder("float", [None, 3])
 
-W = tf.Variable(np.float32(np.random.rand(4, 3)) * 0.1)
-b = tf.Variable(np.float32(np.random.rand(3)) * 0.1)
+level1_W = tf.Variable(np.float32(np.random.rand(4, 5)) * 0.1)
+level1_b = tf.Variable(np.float32(np.random.rand(5)) * 0.1)
 
-y = tf.nn.softmax((tf.sigmoid(tf.matmul(x, W) + b)))
+level2_W = tf.Variable(np.float32(np.random.rand(5, 3)) * 0.1)
+level2_b = tf.Variable(np.float32(np.random.rand(3)) * 0.1)
 
-cross_entropy = tf.reduce_sum(tf.square(y_ - y))
+level1_distribution = tf.sigmoid(tf.matmul(x, level1_W) + level1_b)
+final_distribution = tf.nn.softmax((tf.sigmoid(tf.matmul(level1_distribution, level2_W) + level2_b)))
+
+cross_entropy = tf.reduce_sum(tf.square(y_ - final_distribution))
 # cross_entropy = -tf.reduce_sum(y_*tf.log(y))
 
 train = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
@@ -58,7 +62,7 @@ for step in xrange(1000):
         sess.run(train, feed_dict={x: batch_xs, y_: batch_ys})
         if step % 50 == 0:
             print "Iteration #:", step, "Error: ", sess.run(cross_entropy, feed_dict={x: batch_xs, y_: batch_ys})
-            result = sess.run(y, feed_dict={x: batch_xs})
+            result = sess.run(final_distribution, feed_dict={x: batch_xs})
             for b, r in zip(batch_ys, result):
                 print b, "-->", r
             print "----------------------------------------------------------------------------------"
