@@ -36,7 +36,7 @@ level2_W = tf.Variable(np.float32(np.random.rand(5, 3)) * 0.1)
 level2_b = tf.Variable(np.float32(np.random.rand(3)) * 0.1)
 
 level1_distribution = tf.sigmoid(tf.matmul(x, level1_W) + level1_b)
-final_distribution = tf.nn.softmax((tf.sigmoid(tf.matmul(level1_distribution, level2_W) + level2_b)))
+final_distribution = tf.nn.softmax((tf.matmul(level1_distribution, level2_W) + level2_b))
 
 cross_entropy = tf.reduce_sum(tf.square(y_ - final_distribution))
 # cross_entropy = -tf.reduce_sum(y_*tf.log(y))
@@ -61,8 +61,15 @@ for step in xrange(1000):
 
         sess.run(train, feed_dict={x: batch_xs, y_: batch_ys})
         if step % 50 == 0:
-            print "Iteration #:", step, "Error: ", sess.run(cross_entropy, feed_dict={x: batch_xs, y_: batch_ys})
+            error = sess.run(cross_entropy, feed_dict={x: batch_xs, y_: batch_ys})
+
+            print "Iteration #:", step, "Error: ", error
+            plt.plot(step, error, '-o')
             result = sess.run(final_distribution, feed_dict={x: batch_xs})
+
             for b, r in zip(batch_ys, result):
                 print b, "-->", r
             print "----------------------------------------------------------------------------------"
+
+
+plt.show()
